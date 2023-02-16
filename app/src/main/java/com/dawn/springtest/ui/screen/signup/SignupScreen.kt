@@ -1,14 +1,20 @@
 package com.dawn.springtest.ui.screen.signup
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,6 +42,7 @@ fun NavController.navigateToSignupScreen(navOptions: NavOptions? = null) {
     navigate(route = signupScreenRoute, navOptions = navOptions)
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignupScreen(
     viewModel: SignupViewModel = hiltViewModel()
@@ -43,6 +50,18 @@ fun SignupScreen(
     val formState by viewModel.formState
     val userEmail = formState.userEmail
     val password = formState.password
+
+    val isBusy by viewModel.isBusy.collectAsState()
+
+    AnimatedVisibility(visible = isBusy) {
+        AlertDialog(onDismissRequest = { }) {
+            Card {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text("작업중...", style = MaterialTheme.typography.titleLarge)
+                }
+            }
+        }
+    }
 
     Surface(modifier = Modifier.fillMaxSize()) {
         Column(
