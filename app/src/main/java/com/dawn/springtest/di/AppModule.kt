@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.compose.DialogNavigator
 import com.dawn.springtest.remote.TestSpring
+import com.dawn.springtest.repository.UserRepository
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonPrimitive
@@ -34,35 +35,16 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideTestSpring():TestSpring{
-        val baseUrl=""
+    fun provideUserRepository(testSpring: TestSpring) = UserRepository(testSpring)
 
-        val gson = GsonBuilder()
-            .registerTypeAdapter(
-                LocalDate::class.java,
-                JsonDeserializer<Any?> { json, typeOfT, context -> LocalDate.parse(json.asString) }
-            )
-            .registerTypeAdapter(
-                LocalDate::class.java,
-                JsonSerializer<LocalDate?> { localDate, typeOfT, context -> JsonPrimitive(localDate.toString()) }
-            )
-            .registerTypeAdapter(
-                LocalDateTime::class.java,
-                JsonDeserializer<Any?> { json, typeOfT, context -> LocalDateTime.parse(json.asString) }
-            )
-            .registerTypeAdapter(
-                LocalDateTime::class.java,
-                JsonSerializer<LocalDateTime?> { localDateTime, typeOfT, context ->
-                    JsonPrimitive(
-                        localDateTime.toString()
-                    )
-                }
-            )
-            .create()
+    @Singleton
+    @Provides
+    fun provideTestSpring():TestSpring{
+        val baseUrl="http://10.0.2.2:8080"
 
         return Retrofit.Builder()
             .baseUrl(baseUrl)
-            .addConverterFactory(GsonConverterFactory.create(gson))
+            .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(TestSpring::class.java)
     }

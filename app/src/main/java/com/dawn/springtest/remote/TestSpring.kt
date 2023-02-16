@@ -6,6 +6,7 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface TestSpring {
-    @POST("sign-up")
-    suspend fun saveUser(@Body user: User): Response<User>
+    @POST("users/sign-up")
+    suspend fun saveUser(@Body userForm: User): Response<User>
+
 }
