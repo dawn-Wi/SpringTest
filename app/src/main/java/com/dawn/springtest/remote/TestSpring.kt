@@ -12,10 +12,13 @@ interface TestSpring {
     @POST("users/sign-up")
     suspend fun saveUser(@Body userForm: User): Response<User>
 
-    @POST("user/login")
+    @POST("users/login")
     suspend fun tryLogin(@Body userForm: User): Response<User>
 
     @GET("todo")
     suspend fun getTodoListByUser(@Query("email")email: String): Response<List<Todo>>
+
+    @POST("todo")
+    suspend fun submitTodo(@Body toAdd: Todo): Response<Todo>
 
 }

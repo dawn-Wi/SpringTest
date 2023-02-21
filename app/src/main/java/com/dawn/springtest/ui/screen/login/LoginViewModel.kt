@@ -12,6 +12,7 @@ import com.dawn.springtest.model.User
 import com.dawn.springtest.remote.TestSpring
 import com.dawn.springtest.repository.UserRepository
 import com.dawn.springtest.ui.screen.signup.navigateToSignupScreen
+import com.dawn.springtest.ui.screen.todolist.navigateToTodoListScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -66,7 +67,7 @@ class LoginViewModel @Inject constructor(
                 val tryLoginUser = generateUser()
                 viewModelScope.launch {
                     if (userRepository.tryLogin(tryLoginUser)){
-
+                        navController.navigateToTodoListScreen()
                     }
                     _isBusy.value = false
                 }

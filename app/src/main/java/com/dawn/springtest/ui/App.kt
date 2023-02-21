@@ -14,6 +14,8 @@ import androidx.navigation.compose.NavHost
 import com.dawn.springtest.ui.screen.login.loginScreen
 import com.dawn.springtest.ui.screen.login.loginScreenRoute
 import com.dawn.springtest.ui.screen.signup.signupScreen
+import com.dawn.springtest.ui.screen.todoform.todoFormScreen
+import com.dawn.springtest.ui.screen.todolist.todoListScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,6 +41,8 @@ fun App(
                 //TODO: 앞으로 화면 등록
                 loginScreen()
                 signupScreen()
+                todoListScreen()
+                todoFormScreen()
             }
         }
     }

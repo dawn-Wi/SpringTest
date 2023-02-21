@@ -3,9 +3,8 @@ package com.dawn.springtest.model
 import java.time.LocalDateTime
 
 data class Todo(
-    val check: Boolean = false,
     val content: String = "",
-    val limitTime: LocalDateTime,
+    val limitDateTime: String = "",
     val tag: String = "",
-    val ownerEmail: String ="",
+    val ownerEmail: String = "",
 )
