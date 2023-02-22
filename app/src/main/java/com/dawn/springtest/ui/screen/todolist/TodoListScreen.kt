@@ -1,11 +1,14 @@
 package com.dawn.springtest.ui.screen.todolist
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -19,6 +22,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,6 +33,8 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import com.baec23.ludwig.component.section.DisplaySection
 import com.baec23.ludwig.core.fadingLazy.FadingLazyColumn
+import com.dawn.springtest.service.SnackbarService
+import kotlin.system.exitProcess
 
 const val todoListScreenRoute = "todo_list_screen_route"
 
@@ -49,6 +55,16 @@ fun TodoListScreen(
 ) {
     val myTodoList by viewModel.myTodoList.collectAsState()
 
+    var backPressedTime:Long =0;
+    BackHandler(
+        enabled = true, onBack = {
+            if(System.currentTimeMillis()>backPressedTime+2000){
+                backPressedTime = System.currentTimeMillis()
+            }else if(System.currentTimeMillis() <= backPressedTime+2000){
+                exitProcess(0)
+            }
+        })
+
     Surface(
         modifier = Modifier
             .fillMaxSize()
@@ -56,7 +72,8 @@ fun TodoListScreen(
     ) {
         DisplaySection(headerText = "TODO") {
             FadingLazyColumn(
-                modifier = Modifier,
+                modifier = Modifier
+                    .weight(13f),
                 contentPadding = PaddingValues(3.dp),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.Start
@@ -70,36 +87,43 @@ fun TodoListScreen(
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(100.dp),
+                            .height(110.dp),
                         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
                         shape = RoundedCornerShape(6.dp),
                         onClick = {
-
+                            viewModel.onEvent(TodoListUiEvent.TodoDetailsCardPressed(todo))
                         }
                     ) {
                         Text(
-                            modifier = Modifier.padding(5.dp),
+                            modifier = Modifier.padding(5.dp).weight(1f),
                             text = todo.content,
                             fontSize = 25.sp,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            modifier = Modifier.padding(5.dp),
-                            text = todo.limitDateTime,
+                            modifier = Modifier.padding(5.dp).weight(1f),
+                            text = "마감기한: "+ todo.limitDateTime,
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 15.sp
                         )
-                        Text(
-                            modifier = Modifier.padding(5.dp),
-                            text = todo.tag,
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Light
-                        )
+                        if (todo.tag.length>1){
+                            Text(
+                                modifier = Modifier.padding(5.dp).weight(1f),
+                                text = "#"+ todo.tag,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color.DarkGray
+                            )
+                        }
                     }
+                    Spacer(modifier = Modifier.height(15.dp))
                 }
             }
-            Button(onClick = { viewModel.onEvent(TodoListUiEvent.AddTodoButtonPressed) }) {
+            Button(
+                modifier = Modifier.fillMaxWidth().weight(1f),
+                onClick = { viewModel.onEvent(TodoListUiEvent.AddTodoButtonPressed) }
+            ) {
                 Text(text = "할 일 추가하기")
             }
         }

@@ -5,7 +5,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.compose.DialogNavigator
 import com.dawn.springtest.remote.TestSpring
+import com.dawn.springtest.repository.TodoRepository
 import com.dawn.springtest.repository.UserRepository
+import com.dawn.springtest.service.SnackbarService
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonPrimitive
@@ -32,10 +34,17 @@ object AppModule {
             navigatorProvider.addNavigator(ComposeNavigator())
             navigatorProvider.addNavigator(DialogNavigator())
         }
+    @Singleton
+    @Provides
+    fun provideSnackbarService() = SnackbarService()
 
     @Singleton
     @Provides
     fun provideUserRepository(testSpring: TestSpring) = UserRepository(testSpring)
+
+    @Singleton
+    @Provides
+    fun provideTodoRepository(testSpring: TestSpring) = TodoRepository(testSpring)
 
     @Singleton
     @Provides

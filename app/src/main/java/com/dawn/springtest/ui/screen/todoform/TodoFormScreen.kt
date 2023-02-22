@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
@@ -21,6 +21,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,11 +43,9 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import com.baec23.ludwig.component.button.ButtonState
 import com.baec23.ludwig.component.button.LabelledValueButton
 import com.baec23.ludwig.component.button.StatefulButton
 import com.baec23.ludwig.component.datepicker.DatePicker
-import com.baec23.ludwig.component.inputfield.InputField
 import com.baec23.ludwig.component.section.DisplaySection
 import com.baec23.ludwig.component.timepicker.TimePicker
 import java.time.LocalDate
@@ -85,6 +84,9 @@ fun TodoFormScreen(
     val labelFontSize = MaterialTheme.typography.labelMedium.fontSize
     val labelFontColor = Color.DarkGray
 
+    val items = listOf("공부", "약속", "할일")
+    val (selectedOption, onOptionSelected) = remember { mutableStateOf(items[0]) }
+
     AnimatedVisibility(visible = isBusy) {
         AlertDialog(onDismissRequest = { }) {
             Card {
@@ -108,7 +110,7 @@ fun TodoFormScreen(
                     viewModel.onEvent(TodoFormUiEvent.LimitDateTimeCardExpanded(true))
                     viewModel.onEvent(TodoFormUiEvent.IsDateExpanded(true))
                     viewModel.onEvent(TodoFormUiEvent.IsTimeExpanded(true))
-                }, label = { Text("마감시간") },
+                }, label = { Text("마감기한") },
                 value = {
                     Column(
                         modifier = Modifier.fillMaxWidth(),
@@ -135,12 +137,12 @@ fun TodoFormScreen(
                 })
             DateTimePickerDialog(
                 isShowing = limitDateTimeExpanded,
-                onCancel = { viewModel.onEvent(TodoFormUiEvent.LimitDateTimeCardExpanded(false))},
+                onCancel = { viewModel.onEvent(TodoFormUiEvent.LimitDateTimeCardExpanded(false)) },
                 initialDate = limitDate,
                 initialTime = limitTime,
                 dateExpanded = dateExpanded,
                 timeExpanded = timeExpanded,
-                onUiEvent = {viewModel.onEvent(it)},
+                onUiEvent = { viewModel.onEvent(it) },
                 onDateTimeSelected = { selectedDate, selectedTime ->
                     viewModel.onEvent(
                         TodoFormUiEvent.OnSelectedLimitDateChanged(
@@ -158,14 +160,44 @@ fun TodoFormScreen(
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp)
+                    .height(150.dp)
                     .padding(5.dp),
                 value = content,
                 minLines = 1,
                 maxLines = 5,
-                onValueChange = {viewModel.onEvent(TodoFormUiEvent.OnContentChanged(it))},
-                label = { Text(text = "할 일")}
+                onValueChange = { viewModel.onEvent(TodoFormUiEvent.OnContentChanged(it)) },
+                label = { Text(text = "> 내가 해야 할 일") }
             )
+            DisplaySection(headerText = "태그") {
+                items.forEach { text ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(25.dp)
+                            .selectable(
+                                selected = (text == selectedOption),
+                                onClick = {
+                                    onOptionSelected(text)
+                                    viewModel.onEvent(TodoFormUiEvent.OnSelectedTagChanged(text))
+                                }
+                            ),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = (text == selectedOption),
+                            onClick = {
+                                onOptionSelected(text)
+                                viewModel.onEvent(TodoFormUiEvent.OnSelectedTagChanged(text))
+                            }
+                        )
+                        Text(
+                            modifier = Modifier,
+                            text = text,
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
+                }
+            }
             StatefulButton(
                 modifier = Modifier.fillMaxWidth(),
                 text = "신청",
@@ -251,10 +283,10 @@ fun DateTimePickerDialog(
     onCancel: () -> Unit,
     initialDate: LocalDate,
     initialTime: LocalTime,
-    dateExpanded : Boolean,
-    timeExpanded : Boolean,
+    dateExpanded: Boolean,
+    timeExpanded: Boolean,
     onDateTimeSelected: (LocalDate, LocalTime) -> Unit,
-    onUiEvent : (TodoFormUiEvent)->Unit
+    onUiEvent: (TodoFormUiEvent) -> Unit
 ) {
     var selectedDate by remember { mutableStateOf(initialDate) }
     var selectedTime by remember { mutableStateOf(initialTime) }

@@ -8,6 +8,7 @@ import androidx.navigation.NavHostController
 import com.dawn.springtest.model.Todo
 import com.dawn.springtest.remote.TestSpring
 import com.dawn.springtest.repository.UserRepository
+import com.dawn.springtest.service.SnackbarService
 import com.dawn.springtest.ui.screen.todolist.navigateToTodoListScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,6 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class TodoFormViewModel @Inject constructor(
     private val testSpring: TestSpring,
+    private val snackbarService: SnackbarService,
     private val userRepository: UserRepository,
     private val navController: NavHostController,
 ) : ViewModel() {
@@ -32,19 +34,19 @@ class TodoFormViewModel @Inject constructor(
     private val _isBusy = MutableStateFlow(false)
     val isBusy = _isBusy.asStateFlow()
 
-    private val _selectedLimitDate = MutableStateFlow<LocalDate>(LocalDate.now().plusDays(7))
+    private val _selectedLimitDate = MutableStateFlow<LocalDate>(LocalDate.now().plusDays(1))
     val selectedLimitDate = _selectedLimitDate.asStateFlow()
 
     private val _selectedLimitTime =
         MutableStateFlow<LocalTime>(
-            LocalDate.now().atStartOfDay().toLocalTime().plusHours(9).plusMinutes(30)
+            LocalDate.now().atStartOfDay().toLocalTime().plusHours(12)
         )
     val selectedLimitTime = _selectedLimitTime.asStateFlow()
 
     private val _content = MutableStateFlow("")
     val content = _content.asStateFlow()
 
-    private val _tag = MutableStateFlow("")
+    private val _tag = MutableStateFlow("공부")
     val tag = _tag.asStateFlow()
 
 
@@ -74,13 +76,17 @@ class TodoFormViewModel @Inject constructor(
                 limitDateTimeExpanded.value = event.expanded
             }
 
+            is TodoFormUiEvent.OnSelectedTagChanged -> {
+                _tag.value = event.tag
+            }
+
             TodoFormUiEvent.OnSubmitPressed -> {
                 _isBusy.value = true
                 val toSubmit = generateTodo()
-                System.out.println(toSubmit.limitDateTime)
                 viewModelScope.launch {
                     testSpring.submitTodo(toSubmit)
                     _isBusy.value = false
+                    snackbarService.showSnackbar("저장 성공")
                     navController.navigateToTodoListScreen()
                 }
             }
@@ -91,7 +97,7 @@ class TodoFormViewModel @Inject constructor(
         val userEmail = userRepository.currUser!!.email
         return Todo(
             content = _content.value,
-            limitDateTime ="${_selectedLimitDate.value.year}"+"${_selectedLimitDate.value.monthValue}"+"${_selectedLimitDate.value.dayOfMonth}",
+            limitDateTime = "${_selectedLimitDate.value.year}/" + "${_selectedLimitDate.value.monthValue}/" + "${_selectedLimitDate.value.dayOfMonth}",
             tag = _tag.value,
             ownerEmail = userEmail
         )
@@ -105,5 +111,6 @@ sealed class TodoFormUiEvent {
     data class LimitDateTimeCardExpanded(val expanded: Boolean) : TodoFormUiEvent()
     data class IsDateExpanded(val expanded: Boolean) : TodoFormUiEvent()
     data class IsTimeExpanded(val expanded: Boolean) : TodoFormUiEvent()
+    data class OnSelectedTagChanged(val tag: String) : TodoFormUiEvent()
     object OnSubmitPressed : TodoFormUiEvent()
 }

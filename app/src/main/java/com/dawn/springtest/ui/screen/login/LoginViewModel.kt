@@ -11,6 +11,7 @@ import androidx.navigation.NavHostController
 import com.dawn.springtest.model.User
 import com.dawn.springtest.remote.TestSpring
 import com.dawn.springtest.repository.UserRepository
+import com.dawn.springtest.service.SnackbarService
 import com.dawn.springtest.ui.screen.signup.navigateToSignupScreen
 import com.dawn.springtest.ui.screen.todolist.navigateToTodoListScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,6 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
+    private val snackbarService: SnackbarService,
     private val userRepository: UserRepository,
     private val navController: NavHostController,
 ) : ViewModel() {
@@ -67,6 +69,7 @@ class LoginViewModel @Inject constructor(
                 val tryLoginUser = generateUser()
                 viewModelScope.launch {
                     if (userRepository.tryLogin(tryLoginUser)){
+                        snackbarService.showSnackbar("로그인 성공")
                         navController.navigateToTodoListScreen()
                     }
                     _isBusy.value = false

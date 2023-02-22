@@ -19,7 +19,6 @@ public class TodoService {
 
     public Todo submitTodo(Todo toAdd){
         Todo todoToSave = new Todo(toAdd.getContent(),toAdd.getLimitDateTime(),toAdd.getTag(), toAdd.getOwnerEmail());
-        System.out.println(toAdd.getLimitDateTime());
         return todoRepository.save(todoToSave);
     }
 }
