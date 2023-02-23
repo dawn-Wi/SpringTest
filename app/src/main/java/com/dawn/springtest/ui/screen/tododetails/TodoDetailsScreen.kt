@@ -27,6 +27,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.baec23.ludwig.component.button.ButtonState
 import com.baec23.ludwig.component.button.StatefulButton
 import com.baec23.ludwig.component.section.DisplaySection
 import com.dawn.springtest.ui.screen.todoform.TodoFormUiEvent
@@ -118,13 +119,24 @@ fun TodoDetailsScreen(
             }
             Spacer(modifier = Modifier.height(10.dp))
             Row() {
-                StatefulButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    text = "수정",
-                ) {
-                    viewModel.onEvent(TodoDetailsUiEvent.EditButtonPressed)
+                if (currTodo.finish=="false"){
+                    StatefulButton(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        text = "수정",
+                    ) {
+                        viewModel.onEvent(TodoDetailsUiEvent.EditButtonPressed(currTodo))
+                    }
+                }else{
+                    StatefulButton(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        text = "삭제",
+                    ) {
+                        viewModel.onEvent(TodoDetailsUiEvent.DeleteButtonPressed(currTodo))
+                    }
                 }
                 Spacer(modifier = Modifier.width(10.dp))
                 StatefulButton(
@@ -139,8 +151,13 @@ fun TodoDetailsScreen(
             StatefulButton(
                 modifier = Modifier.fillMaxWidth(),
                 text = "할 일 완료",
+                state = if (currTodo.finish == "false") {
+                    ButtonState.Enabled
+                } else {
+                    ButtonState.Disabled
+                }
             ) {
-                viewModel.onEvent(TodoDetailsUiEvent.FinishButtonPressed)
+                viewModel.onEvent(TodoDetailsUiEvent.FinishButtonPressed(currTodo))
             }
         }
     }

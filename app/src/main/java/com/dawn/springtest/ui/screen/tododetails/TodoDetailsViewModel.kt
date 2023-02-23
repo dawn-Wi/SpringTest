@@ -9,6 +9,9 @@ import com.dawn.springtest.remote.TestSpring
 import com.dawn.springtest.repository.TodoRepository
 import com.dawn.springtest.repository.UserRepository
 import com.dawn.springtest.service.SnackbarService
+import com.dawn.springtest.ui.screen.edittodo.navigateToEditTodoScreen
+import com.dawn.springtest.ui.screen.finishtodolist.navigateToFinishTodoListScreen
+import com.dawn.springtest.ui.screen.todolist.navigateToTodoListScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,11 +31,25 @@ class TodoDetailsViewModel @Inject constructor(
 
     fun onEvent(event : TodoDetailsUiEvent){
         when(event){
-            TodoDetailsUiEvent.EditButtonPressed -> TODO()
+            is TodoDetailsUiEvent.FinishButtonPressed -> {
+                viewModelScope.launch{
+                    testSpring.finishTodo(event.selectedTodo)
+                    navController.navigateToTodoListScreen()
+                }
+            }
+            is TodoDetailsUiEvent.DeleteButtonPressed -> {
+                viewModelScope.launch {
+                    testSpring.deleteTodo(event.deleteTodo)
+                    navController.navigateToFinishTodoListScreen()
+                }
+            }
             TodoDetailsUiEvent.ConfirmButtonPressed -> {
                 navController.navigateUp()
             }
-            TodoDetailsUiEvent.FinishButtonPressed -> TODO()
+
+            is TodoDetailsUiEvent.EditButtonPressed ->{
+                navController.navigateToEditTodoScreen(todoId = event.editTodo.id.toInt())
+            }
         }
     }
 
@@ -46,7 +63,8 @@ class TodoDetailsViewModel @Inject constructor(
 }
 
 sealed class TodoDetailsUiEvent{
-    object EditButtonPressed: TodoDetailsUiEvent()
+    data class FinishButtonPressed(val selectedTodo:Todo): TodoDetailsUiEvent()
+    data class DeleteButtonPressed(val deleteTodo: Todo): TodoDetailsUiEvent()
+    data class EditButtonPressed(val editTodo: Todo): TodoDetailsUiEvent()
     object ConfirmButtonPressed: TodoDetailsUiEvent()
-    object FinishButtonPressed: TodoDetailsUiEvent()
 }

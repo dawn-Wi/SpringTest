@@ -1,6 +1,5 @@
-package com.dawn.springtest.ui.screen.todolist
+package com.dawn.springtest.ui.screen.finishtodolist
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -8,9 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,44 +30,33 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import com.baec23.ludwig.component.section.DisplaySection
 import com.baec23.ludwig.core.fadingLazy.FadingLazyColumn
-import com.dawn.springtest.service.SnackbarService
-import kotlin.system.exitProcess
 
-const val todoListScreenRoute = "todo_list_screen_route"
 
-fun NavGraphBuilder.todoListScreen() {
-    composable(route = todoListScreenRoute) {
-        TodoListScreen()
+const val finishTodoListScreenRoute = "finish_Todo_list_screen_route"
+
+fun NavGraphBuilder.finishTodoListScreen() {
+    composable(route = finishTodoListScreenRoute) {
+        FinishTodoListScreen()
     }
 }
 
-fun NavController.navigateToTodoListScreen(navOptions: NavOptions? = null) {
-    this.navigate(route = todoListScreenRoute, navOptions = navOptions)
+fun NavController.navigateToFinishTodoListScreen(navOptions: NavOptions? = null) {
+    this.navigate(route = finishTodoListScreenRoute, navOptions = navOptions)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TodoListScreen(
-    viewModel: TodoListViewModel = hiltViewModel()
+fun FinishTodoListScreen(
+    viewModel: FinishTodoListViewModel= hiltViewModel()
 ) {
     val myTodoList by viewModel.myTodoList.collectAsState()
-
-    var backPressedTime:Long =0;
-    BackHandler(
-        enabled = true, onBack = {
-            if(System.currentTimeMillis()>backPressedTime+2000){
-                backPressedTime = System.currentTimeMillis()
-            }else if(System.currentTimeMillis() <= backPressedTime+2000){
-                exitProcess(0)
-            }
-        })
 
     Surface(
         modifier = Modifier
             .fillMaxSize()
             .padding(top = 16.dp, bottom = 16.dp)
     ) {
-        DisplaySection(headerText = "TODO") {
+        DisplaySection(headerText = "FINISH TODO") {
             FadingLazyColumn(
                 modifier = Modifier
                     .weight(13f),
@@ -92,7 +78,7 @@ fun TodoListScreen(
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
                         shape = RoundedCornerShape(6.dp),
                         onClick = {
-                            viewModel.onEvent(TodoListUiEvent.TodoDetailsCardPressed(todo))
+                            viewModel.onEvent(FinishTodoListUiEvent.FinishTodoDetailsCardPressed(todo))
                         }
                     ) {
                         Text(
@@ -119,12 +105,6 @@ fun TodoListScreen(
                     }
                     Spacer(modifier = Modifier.height(15.dp))
                 }
-            }
-            Button(
-                modifier = Modifier.fillMaxWidth().weight(1f),
-                onClick = { viewModel.onEvent(TodoListUiEvent.AddTodoButtonPressed) }
-            ) {
-                Text(text = "할 일 추가하기")
             }
         }
     }

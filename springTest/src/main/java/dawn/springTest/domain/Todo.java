@@ -16,11 +16,13 @@ public class Todo {
     private String limitDateTime;
     private String tag;
     private String ownerEmail;
+    private String finish;
 
-    public Todo(String content, String limitDateTime, String tag, String ownerEmail){
+    public Todo(String content, String limitDateTime, String tag, String ownerEmail,String finish){
         this.content = content;
         this.limitDateTime = limitDateTime;
         this.tag = tag;
         this.ownerEmail = ownerEmail;
+        this.finish = finish;
     }
 }

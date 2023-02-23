@@ -1,4 +1,4 @@
-package com.dawn.springtest.ui.screen.todoform
+package com.dawn.springtest.ui.screen.edittodo
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -33,41 +33,59 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.baec23.ludwig.component.button.LabelledValueButton
 import com.baec23.ludwig.component.button.StatefulButton
 import com.baec23.ludwig.component.datepicker.DatePicker
 import com.baec23.ludwig.component.section.DisplaySection
 import com.baec23.ludwig.component.timepicker.TimePicker
+import com.dawn.springtest.ui.screen.todoform.toAnnotatedString
 import java.time.LocalDate
 import java.time.LocalTime
 
-const val todoFormScreenRoute = "todoForm_Screen_Route"
+const val editTodoScreenRoute = "editTodo_Screen_Route"
 
-fun NavGraphBuilder.todoFormScreen() {
-    composable(route = todoFormScreenRoute) {
-        TodoFormScreen()
+fun NavGraphBuilder.editTodoScreen(){
+    composable(
+        route = "$editTodoScreenRoute/{todoId}", arguments = listOf(
+            navArgument("todoId"){
+                type = NavType.IntType
+                nullable=false
+            }
+        )
+    ){
+        val todoId = it.arguments?.getInt("todoId")
+        todoId?.let {
+            val viewModel: EditTodoViewModel = hiltViewModel()
+            viewModel.setCurrTodo(todoId = todoId.toString())
+            EditTodoScreen(viewModel = viewModel, todoId = todoId)
+        }
     }
 }
 
-fun NavController.navigateToTodoFormScreen(navOptions: NavOptions? = null) {
-    navigate(route = todoFormScreenRoute, navOptions = navOptions)
+fun NavController.navigateToEditTodoScreen(
+    todoId: Int,
+    navOptions: NavOptions? =null
+){
+    val routeWithArgument="$editTodoScreenRoute/$todoId"
+    this.navigate(route = routeWithArgument, navOptions = navOptions)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TodoFormScreen(
-    viewModel: TodoFormViewModel = hiltViewModel()
+fun EditTodoScreen(
+    viewModel: EditTodoViewModel = hiltViewModel(),
+    todoId: Int
 ) {
+    val currTodo by viewModel.currTodo.collectAsState()
+
     val isBusy by viewModel.isBusy.collectAsState()
     val limitDateTimeExpanded by viewModel.limitDateTimeExpanded
 
@@ -84,8 +102,9 @@ fun TodoFormScreen(
     val labelFontSize = MaterialTheme.typography.labelMedium.fontSize
     val labelFontColor = Color.DarkGray
 
+    val tag by viewModel.tag.collectAsState()
     val items = listOf("공부", "약속", "할일")
-    val (selectedOption, onOptionSelected) = remember { mutableStateOf(items[0]) }
+    val (selectedOption, onOptionSelected) = remember { mutableStateOf(tag) }
 
     AnimatedVisibility(visible = isBusy) {
         AlertDialog(onDismissRequest = { }) {
@@ -96,7 +115,6 @@ fun TodoFormScreen(
             }
         }
     }
-
     Surface(
         modifier = Modifier
             .fillMaxSize()
@@ -107,9 +125,9 @@ fun TodoFormScreen(
 
             LabelledValueButton(
                 onClick = {
-                    viewModel.onEvent(TodoFormUiEvent.LimitDateTimeCardExpanded(true))
-                    viewModel.onEvent(TodoFormUiEvent.IsDateExpanded(true))
-                    viewModel.onEvent(TodoFormUiEvent.IsTimeExpanded(true))
+                    viewModel.onEvent(EditTodoUiEvent.LimitDateTimeCardExpanded(true))
+                    viewModel.onEvent(EditTodoUiEvent.IsDateExpanded(true))
+                    viewModel.onEvent(EditTodoUiEvent.IsTimeExpanded(true))
                 }, label = { Text("마감기한") },
                 value = {
                     Column(
@@ -137,24 +155,24 @@ fun TodoFormScreen(
                 })
             DateTimePickerDialog(
                 isShowing = limitDateTimeExpanded,
-                onCancel = { viewModel.onEvent(TodoFormUiEvent.LimitDateTimeCardExpanded(false)) },
+                onCancel = { viewModel.onEvent(EditTodoUiEvent.LimitDateTimeCardExpanded(false)) },
                 initialDate = limitDate,
                 initialTime = limitTime,
                 dateExpanded = dateExpanded,
                 timeExpanded = timeExpanded,
-                onUiEvent = { viewModel.onEvent(it) },
+                onUiEvent = { viewModel.onEvent(it)},
                 onDateTimeSelected = { selectedDate, selectedTime ->
                     viewModel.onEvent(
-                        TodoFormUiEvent.OnSelectedLimitDateChanged(
+                        EditTodoUiEvent.OnSelectedLimitDateChanged(
                             selectedDate
                         )
                     )
                     viewModel.onEvent(
-                        TodoFormUiEvent.OnSelectedLimitTimeChanged(
+                        EditTodoUiEvent.OnSelectedLimitTimeChanged(
                             selectedTime
                         )
                     )
-                    viewModel.onEvent(TodoFormUiEvent.LimitDateTimeCardExpanded(false))
+                    viewModel.onEvent(EditTodoUiEvent.LimitDateTimeCardExpanded(false))
                 }
             )
             OutlinedTextField(
@@ -165,7 +183,7 @@ fun TodoFormScreen(
                 value = content,
                 minLines = 1,
                 maxLines = 5,
-                onValueChange = { viewModel.onEvent(TodoFormUiEvent.OnContentChanged(it)) },
+                onValueChange = { viewModel.onEvent(EditTodoUiEvent.OnContentChanged(it)) },
                 label = { Text(text = "> 내가 해야 할 일") }
             )
             DisplaySection(headerText = "태그") {
@@ -178,7 +196,7 @@ fun TodoFormScreen(
                                 selected = (text == selectedOption),
                                 onClick = {
                                     onOptionSelected(text)
-                                    viewModel.onEvent(TodoFormUiEvent.OnSelectedTagChanged(text))
+                                    viewModel.onEvent(EditTodoUiEvent.OnSelectedTagChanged(text))
                                 }
                             ),
                         verticalAlignment = Alignment.CenterVertically
@@ -187,7 +205,7 @@ fun TodoFormScreen(
                             selected = (text == selectedOption),
                             onClick = {
                                 onOptionSelected(text)
-                                viewModel.onEvent(TodoFormUiEvent.OnSelectedTagChanged(text))
+                                viewModel.onEvent(EditTodoUiEvent.OnSelectedTagChanged(text))
                             }
                         )
                         Text(
@@ -200,81 +218,14 @@ fun TodoFormScreen(
             }
             StatefulButton(
                 modifier = Modifier.fillMaxWidth(),
-                text = "신청",
+                text = "수정완료",
             ) {
-                viewModel.onEvent(TodoFormUiEvent.OnSubmitPressed)
+                viewModel.onEvent(EditTodoUiEvent.OnSubmitPressed)
             }
         }
     }
+
 }
-
-
-fun LocalTime.toAnnotatedString(
-    valueFontSize: TextUnit,
-    valueColor: Color,
-    labelFontSize: TextUnit,
-    labelColor: Color
-): AnnotatedString {
-    return buildAnnotatedString {
-        val valueStyle = SpanStyle(fontSize = valueFontSize, color = valueColor)
-        val labelStyle = SpanStyle(fontSize = labelFontSize, color = labelColor)
-        pushStyle(valueStyle)
-        append(hour.toString())
-        pop()
-        pushStyle(labelStyle)
-        append("시")
-        pop()
-        append(" ")
-
-        pushStyle(valueStyle)
-        append(minute.toString())
-        pop()
-        pushStyle(labelStyle)
-        append("분")
-        pop()
-        append(" ")
-
-        toAnnotatedString()
-    }
-}
-
-fun LocalDate.toAnnotatedString(
-    valueFontSize: TextUnit,
-    valueColor: Color,
-    labelFontSize: TextUnit,
-    labelColor: Color
-): AnnotatedString {
-    return buildAnnotatedString {
-        val valueStyle = SpanStyle(fontSize = valueFontSize, color = valueColor)
-        val labelStyle = SpanStyle(fontSize = labelFontSize, color = labelColor)
-        pushStyle(valueStyle)
-        append(year.toString())
-        pop()
-        pushStyle(labelStyle)
-        append("년")
-        pop()
-        append(" ")
-
-        pushStyle(valueStyle)
-        append(monthValue.toString())
-        pop()
-        pushStyle(labelStyle)
-        append("월")
-        pop()
-        append(" ")
-
-        pushStyle(valueStyle)
-        append(dayOfMonth.toString())
-        pop()
-        pushStyle(labelStyle)
-        append("일")
-        pop()
-        append(" ")
-
-        toAnnotatedString()
-    }
-}
-
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -286,7 +237,7 @@ fun DateTimePickerDialog(
     dateExpanded: Boolean,
     timeExpanded: Boolean,
     onDateTimeSelected: (LocalDate, LocalTime) -> Unit,
-    onUiEvent: (TodoFormUiEvent) -> Unit
+    onUiEvent: (EditTodoUiEvent) -> Unit
 ) {
     var selectedDate by remember { mutableStateOf(initialDate) }
     var selectedTime by remember { mutableStateOf(initialTime) }
@@ -302,7 +253,7 @@ fun DateTimePickerDialog(
                     onCancelled = onCancel,
                     onDateSelectionFinalized = {
                         selectedDate = it
-                        onUiEvent(TodoFormUiEvent.IsDateExpanded(false))
+                        onUiEvent(EditTodoUiEvent.IsDateExpanded(false))
                     },
                     shouldFinalizeOnSelect = true,
                     initialDate = initialDate
@@ -332,11 +283,11 @@ fun DateTimePickerDialog(
                             ) {
                                 StatefulButton(text = "완료") {
                                     onDateTimeSelected(selectedDate, selectedTime)
-                                    onUiEvent(TodoFormUiEvent.IsTimeExpanded(false))
+                                    onUiEvent(EditTodoUiEvent.IsTimeExpanded(false))
                                 }
                                 StatefulButton(text = "취소") {
-                                    onUiEvent(TodoFormUiEvent.IsDateExpanded(true))
-                                    onUiEvent(TodoFormUiEvent.IsTimeExpanded(true))
+                                    onUiEvent(EditTodoUiEvent.IsDateExpanded(true))
+                                    onUiEvent(EditTodoUiEvent.IsTimeExpanded(true))
                                 }
                             }
                         }

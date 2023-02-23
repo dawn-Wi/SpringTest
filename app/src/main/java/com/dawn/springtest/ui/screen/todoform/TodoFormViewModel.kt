@@ -97,9 +97,11 @@ class TodoFormViewModel @Inject constructor(
         val userEmail = userRepository.currUser!!.email
         return Todo(
             content = _content.value,
-            limitDateTime = "${_selectedLimitDate.value.year}/" + "${_selectedLimitDate.value.monthValue}/" + "${_selectedLimitDate.value.dayOfMonth}",
+//            limitDateTime = "${_selectedLimitDate.value.year}/" + "${_selectedLimitDate.value.monthValue}/" + "${_selectedLimitDate.value.dayOfMonth}",
+            limitDateTime = _selectedLimitDate.value.toString()+" / "+_selectedLimitTime.value.toString(),
             tag = _tag.value,
-            ownerEmail = userEmail
+            ownerEmail = userEmail,
+            finish = "false"
         )
     }
 }

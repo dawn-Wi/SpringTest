@@ -34,4 +34,28 @@ public class TodoController {
             return ResponseEntity.badRequest().build();
         }
     }
+    @PostMapping("todo/finish")
+    public ResponseEntity<Todo> finishTodo(@RequestBody Todo finishTodo){
+        try {
+            return ResponseEntity.ok(todoService.finishTodo(finishTodo));
+        }catch (EntityExistsException e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    @PostMapping("todo/delete")
+    public ResponseEntity<Todo> deleteTodo(@RequestBody Todo deleteTodo){
+        try {
+            return ResponseEntity.ok(todoService.deleteTodo(deleteTodo));
+        }catch (EntityExistsException e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    @PostMapping("todo/edit")
+    public ResponseEntity<Todo> editTodo(@RequestBody Todo editTodo){
+        try {
+            return ResponseEntity.ok(todoService.editTodo(editTodo));
+        }catch (EntityExistsException e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }

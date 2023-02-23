@@ -21,4 +21,13 @@ interface TestSpring {
     @POST("todo")
     suspend fun submitTodo(@Body toAdd: Todo): Response<Todo>
 
+    @POST("todo/finish")
+    suspend fun finishTodo(@Body toAdd: Todo): Response<Todo>
+
+    @POST("todo/delete")
+    suspend fun deleteTodo(@Body deleteTodo: Todo): Response<Todo>
+
+    @POST("todo/edit")
+    suspend fun editTodo(@Body editTodo: Todo): Response<Todo>
+
 }

@@ -9,4 +9,5 @@ data class Todo(
     val limitDateTime: String = "",
     val tag: String = "",
     val ownerEmail: String = "",
+    val finish: String=""
 )

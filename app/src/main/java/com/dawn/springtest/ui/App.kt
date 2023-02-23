@@ -16,6 +16,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import com.dawn.springtest.ui.comp.BottomNavBar
 import com.dawn.springtest.ui.comp.bottomNavBarItem
+import com.dawn.springtest.ui.screen.edittodo.editTodoScreen
+import com.dawn.springtest.ui.screen.finishtodolist.finishTodoListScreen
 import com.dawn.springtest.ui.screen.login.loginScreen
 import com.dawn.springtest.ui.screen.login.loginScreenRoute
 import com.dawn.springtest.ui.screen.signup.signupScreen
@@ -64,6 +66,8 @@ fun App(
                 todoListScreen()
                 todoFormScreen()
                 todoDetailsScreen()
+                finishTodoListScreen()
+                editTodoScreen()
             }
         }
     }
