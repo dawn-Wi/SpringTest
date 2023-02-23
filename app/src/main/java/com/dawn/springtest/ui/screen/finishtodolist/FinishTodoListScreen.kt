@@ -8,9 +8,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -47,7 +50,7 @@ fun NavController.navigateToFinishTodoListScreen(navOptions: NavOptions? = null)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FinishTodoListScreen(
-    viewModel: FinishTodoListViewModel= hiltViewModel()
+    viewModel: FinishTodoListViewModel = hiltViewModel()
 ) {
     val myTodoList by viewModel.myTodoList.collectAsState()
 
@@ -78,25 +81,35 @@ fun FinishTodoListScreen(
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
                         shape = RoundedCornerShape(6.dp),
                         onClick = {
-                            viewModel.onEvent(FinishTodoListUiEvent.FinishTodoDetailsCardPressed(todo))
+                            viewModel.onEvent(
+                                FinishTodoListUiEvent.FinishTodoDetailsCardPressed(
+                                    todo
+                                )
+                            )
                         }
                     ) {
                         Text(
-                            modifier = Modifier.padding(5.dp).weight(1f),
+                            modifier = Modifier
+                                .padding(5.dp)
+                                .weight(1f),
                             text = todo.content,
                             fontSize = 25.sp,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            modifier = Modifier.padding(5.dp).weight(1f),
-                            text = "마감기한: "+ todo.limitDateTime,
+                            modifier = Modifier
+                                .padding(5.dp)
+                                .weight(1f),
+                            text = "마감기한: " + todo.limitDateTime,
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 15.sp
                         )
-                        if (todo.tag.length>1){
+                        if (todo.tag.length > 1) {
                             Text(
-                                modifier = Modifier.padding(5.dp).weight(1f),
-                                text = "#"+ todo.tag,
+                                modifier = Modifier
+                                    .padding(5.dp)
+                                    .weight(1f),
+                                text = "#" + todo.tag,
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 color = Color.DarkGray
@@ -106,6 +119,14 @@ fun FinishTodoListScreen(
                     Spacer(modifier = Modifier.height(15.dp))
                 }
             }
+            ExtendedFloatingActionButton(
+                modifier = Modifier
+                    .weight(1f)
+                    .align(Alignment.End),
+                text = { Text(text = "로그아웃") },
+                icon = { Icons.Default.ExitToApp },
+                shape = RoundedCornerShape(30.dp),
+                onClick = { viewModel.onEvent(FinishTodoListUiEvent.LogoutPressed) })
         }
     }
 }

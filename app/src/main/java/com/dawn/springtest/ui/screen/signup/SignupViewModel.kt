@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.dawn.springtest.model.User
 import com.dawn.springtest.remote.TestSpring
-import com.dawn.springtest.repository.UserRepository
 import com.dawn.springtest.ui.screen.login.LoginFormState
 import com.dawn.springtest.ui.screen.login.navigateToLoginScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +20,7 @@ import javax.inject.Inject
 class SignupViewModel @Inject constructor(
     private val testSpring: TestSpring,
     private val navController: NavHostController
-): ViewModel(){
+) : ViewModel() {
 
     private val _formState: MutableState<LoginFormState> = mutableStateOf(LoginFormState())
     val formState: State<LoginFormState> = _formState
@@ -29,18 +28,20 @@ class SignupViewModel @Inject constructor(
     private val _isBusy = MutableStateFlow(false)
     val isBusy = _isBusy.asStateFlow()
 
-    fun onEvent(event: SignupUiEvent){
-        when(event){
+    fun onEvent(event: SignupUiEvent) {
+        when (event) {
             is SignupUiEvent.UserEmailChanged -> {
                 _formState.value = _formState.value.copy(
                     userEmail = event.userEmail
                 )
             }
+
             is SignupUiEvent.PasswordChanged -> {
                 _formState.value = _formState.value.copy(
                     password = event.password
                 )
             }
+
             SignupUiEvent.SubmitButtonPressed -> {
                 _isBusy.value = true
                 val toSave = generateUser()
@@ -53,9 +54,9 @@ class SignupViewModel @Inject constructor(
         }
     }
 
-    private fun generateUser(): User{
+    private fun generateUser(): User {
         return User(
-            email = _formState.value.userEmail,
+            email = _formState.value.userEmail.lowercase(),
             password = _formState.value.password
         )
     }
@@ -67,8 +68,8 @@ data class SignupFormState(
     val password: String = ""
 )
 
-sealed class SignupUiEvent{
-    data class UserEmailChanged(val userEmail: String): SignupUiEvent()
-    data class PasswordChanged(val password: String): SignupUiEvent()
+sealed class SignupUiEvent {
+    data class UserEmailChanged(val userEmail: String) : SignupUiEvent()
+    data class PasswordChanged(val password: String) : SignupUiEvent()
     object SubmitButtonPressed : SignupUiEvent()
 }

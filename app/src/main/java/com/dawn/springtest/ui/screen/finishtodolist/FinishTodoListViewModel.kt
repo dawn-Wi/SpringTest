@@ -7,8 +7,8 @@ import com.dawn.springtest.model.Todo
 import com.dawn.springtest.remote.TestSpring
 import com.dawn.springtest.repository.TodoRepository
 import com.dawn.springtest.repository.UserRepository
+import com.dawn.springtest.ui.screen.login.navigateToLoginScreen
 import com.dawn.springtest.ui.screen.tododetails.navigateToTodoDetailsScreen
-import com.dawn.springtest.ui.screen.todoform.navigateToTodoFormScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,27 +17,30 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FinishTodoListViewModel @Inject constructor(
-    private val testSpring: TestSpring,
     private val userRepository: UserRepository,
     private val todoRepository: TodoRepository,
     private val navController: NavHostController
-): ViewModel(){
+) : ViewModel() {
     private val _myTodoList = MutableStateFlow<List<Todo>>(listOf())
     val myTodoList = _myTodoList.asStateFlow()
 
-    fun onEvent(event: FinishTodoListUiEvent){
-        when(event){
+    fun onEvent(event: FinishTodoListUiEvent) {
+        when (event) {
             is FinishTodoListUiEvent.FinishTodoDetailsCardPressed -> {
                 navController.navigateToTodoDetailsScreen(todoId = event.todo.id.toInt())
+            }
+
+            FinishTodoListUiEvent.LogoutPressed -> {
+                navController.navigateToLoginScreen()
             }
         }
     }
 
-    private fun getTodoListByUser(){
+    private fun getTodoListByUser() {
         val userEmail = userRepository.currUser!!.email
         viewModelScope.launch {
             _myTodoList.value = todoRepository.getTodoListByUser(userEmail)!!.filter {
-                it.finish=="true"
+                it.finish == "true"
             }
         }
     }
@@ -47,6 +50,7 @@ class FinishTodoListViewModel @Inject constructor(
     }
 }
 
-sealed class FinishTodoListUiEvent{
-    data class FinishTodoDetailsCardPressed(val todo: Todo): FinishTodoListUiEvent()
+sealed class FinishTodoListUiEvent {
+    data class FinishTodoDetailsCardPressed(val todo: Todo) : FinishTodoListUiEvent()
+    object LogoutPressed : FinishTodoListUiEvent()
 }

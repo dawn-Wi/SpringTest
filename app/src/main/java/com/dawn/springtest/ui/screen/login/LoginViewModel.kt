@@ -6,10 +6,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.dawn.springtest.model.User
-import com.dawn.springtest.remote.TestSpring
 import com.dawn.springtest.repository.UserRepository
 import com.dawn.springtest.service.SnackbarService
 import com.dawn.springtest.ui.screen.signup.navigateToSignupScreen
@@ -61,14 +59,16 @@ class LoginViewModel @Inject constructor(
                 )
                 checkIfFormIsValid()
             }
-            LoginUiEvent.SignupButtonPressed ->{
+
+            LoginUiEvent.SignupButtonPressed -> {
                 navController.navigateToSignupScreen()
             }
+
             LoginUiEvent.LoginButtonPressed -> {
                 _isBusy.value = true
                 val tryLoginUser = generateUser()
                 viewModelScope.launch {
-                    if (userRepository.tryLogin(tryLoginUser)){
+                    if (userRepository.tryLogin(tryLoginUser)) {
                         snackbarService.showSnackbar("로그인 성공")
                         navController.navigateToTodoListScreen()
                     }
@@ -80,7 +80,7 @@ class LoginViewModel @Inject constructor(
 
     private fun generateUser(): User {
         return User(
-            email = _formState.value.userEmail,
+            email = _formState.value.userEmail.lowercase(),
             password = _formState.value.password
         )
     }
@@ -94,6 +94,6 @@ data class LoginFormState(
 sealed class LoginUiEvent {
     data class UserEmailChanged(val userEmail: String) : LoginUiEvent()
     data class PasswordChanged(val password: String) : LoginUiEvent()
-    object SignupButtonPressed: LoginUiEvent()
+    object SignupButtonPressed : LoginUiEvent()
     object LoginButtonPressed : LoginUiEvent()
 }

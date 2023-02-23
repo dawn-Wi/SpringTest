@@ -52,15 +52,15 @@ import java.time.LocalTime
 
 const val editTodoScreenRoute = "editTodo_Screen_Route"
 
-fun NavGraphBuilder.editTodoScreen(){
+fun NavGraphBuilder.editTodoScreen() {
     composable(
         route = "$editTodoScreenRoute/{todoId}", arguments = listOf(
-            navArgument("todoId"){
+            navArgument("todoId") {
                 type = NavType.IntType
-                nullable=false
+                nullable = false
             }
         )
-    ){
+    ) {
         val todoId = it.arguments?.getInt("todoId")
         todoId?.let {
             val viewModel: EditTodoViewModel = hiltViewModel()
@@ -72,9 +72,9 @@ fun NavGraphBuilder.editTodoScreen(){
 
 fun NavController.navigateToEditTodoScreen(
     todoId: Int,
-    navOptions: NavOptions? =null
-){
-    val routeWithArgument="$editTodoScreenRoute/$todoId"
+    navOptions: NavOptions? = null
+) {
+    val routeWithArgument = "$editTodoScreenRoute/$todoId"
     this.navigate(route = routeWithArgument, navOptions = navOptions)
 }
 
@@ -160,7 +160,7 @@ fun EditTodoScreen(
                 initialTime = limitTime,
                 dateExpanded = dateExpanded,
                 timeExpanded = timeExpanded,
-                onUiEvent = { viewModel.onEvent(it)},
+                onUiEvent = { viewModel.onEvent(it) },
                 onDateTimeSelected = { selectedDate, selectedTime ->
                     viewModel.onEvent(
                         EditTodoUiEvent.OnSelectedLimitDateChanged(

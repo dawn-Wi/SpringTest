@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.LocalTime
 import javax.inject.Inject
 
@@ -97,8 +96,7 @@ class TodoFormViewModel @Inject constructor(
         val userEmail = userRepository.currUser!!.email
         return Todo(
             content = _content.value,
-//            limitDateTime = "${_selectedLimitDate.value.year}/" + "${_selectedLimitDate.value.monthValue}/" + "${_selectedLimitDate.value.dayOfMonth}",
-            limitDateTime = _selectedLimitDate.value.toString()+" / "+_selectedLimitTime.value.toString(),
+            limitDateTime = _selectedLimitDate.value.toString() + " / " + _selectedLimitTime.value.toString(),
             tag = _tag.value,
             ownerEmail = userEmail,
             finish = "false"

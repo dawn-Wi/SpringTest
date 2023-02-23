@@ -35,16 +35,16 @@ fun App(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {},
-        snackbarHost = { SnackbarHost(hostState = viewModel.snackbarService.snackbarState)},
+        snackbarHost = { SnackbarHost(hostState = viewModel.snackbarService.snackbarState) },
         bottomBar = {
-            if (currNavScreenRoute!= loginScreenRoute){
+            if (currNavScreenRoute != loginScreenRoute) {
                 BottomNavBar(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp),
                     items = bottomNavBarItem,
                     currNavScreenRoute = currNavScreenRoute,
-                    onBottomNavBarButtonPressed ={
+                    onBottomNavBarButtonPressed = {
                         viewModel.onEvent(AppUiEvent.BottomNavBarButtonPressed(it))
                     }
                 )
@@ -59,7 +59,7 @@ fun App(
             NavHost(
                 navController = viewModel.navController,
                 startDestination = loginScreenRoute
-            ){
+            ) {
                 //TODO: 앞으로 화면 등록
                 loginScreen()
                 signupScreen()

@@ -1,5 +1,6 @@
 package com.dawn.springtest.ui.screen.login
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,6 +24,7 @@ import androidx.navigation.compose.composable
 import com.baec23.ludwig.component.inputfield.InputField
 import com.baec23.ludwig.component.inputfield.InputValidator
 import com.baec23.ludwig.component.section.DisplaySection
+import kotlin.system.exitProcess
 
 const val loginScreenRoute = "login_screen_route"
 
@@ -45,6 +47,16 @@ fun LoginScreen(
     val password = formState.password
     val isFormValid by viewModel.isFormValid
 
+    var backPressedTime: Long = 0;
+    BackHandler(
+        enabled = true, onBack = {
+            if (System.currentTimeMillis() > backPressedTime + 2000) {
+                backPressedTime = System.currentTimeMillis()
+            } else if (System.currentTimeMillis() <= backPressedTime + 2000) {
+                exitProcess(0)
+            }
+        })
+
     Surface(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -52,7 +64,7 @@ fun LoginScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            DisplaySection(headerText = "Login") {
+            DisplaySection(headerText = "로그인") {
                 InputField(
                     modifier = Modifier,
                     value = userEmail,

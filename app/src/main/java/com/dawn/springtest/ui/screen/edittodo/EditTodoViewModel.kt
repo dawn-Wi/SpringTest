@@ -10,14 +10,12 @@ import com.dawn.springtest.remote.TestSpring
 import com.dawn.springtest.repository.TodoRepository
 import com.dawn.springtest.repository.UserRepository
 import com.dawn.springtest.service.SnackbarService
-import com.dawn.springtest.ui.screen.todoform.TodoFormUiEvent
 import com.dawn.springtest.ui.screen.todolist.navigateToTodoListScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
@@ -112,24 +110,24 @@ class EditTodoViewModel @Inject constructor(
     private fun generateTodo(): Todo {
         val userEmail = userRepository.currUser!!.email
         return Todo(
-            id=_currTodo.value.id,
+            id = _currTodo.value.id,
             content = _content.value,
-            limitDateTime = _selectedLimitDate.value.toString()+" / "+_selectedLimitTime.value.toString(),
+            limitDateTime = _selectedLimitDate.value.toString() + " / " + _selectedLimitTime.value.toString(),
             tag = _tag.value,
             ownerEmail = userEmail,
             finish = "false"
         )
     }
 
-    private fun settingTodo(){
+    private fun settingTodo() {
         _content.value = _currTodo.value.content
         val format = DateTimeFormatter.ofPattern("yyyy-MM-dd ")!!
         val format2 = DateTimeFormatter.ofPattern(" HH:mm")!!
-        val strToLocalDate = LocalDate.parse(_currTodo.value.limitDateTime.split("/")[0],format)!!
-        val strToLocalTime = LocalTime.parse(_currTodo.value.limitDateTime.split("/")[1],format2)!!
+        val strToLocalDate = LocalDate.parse(_currTodo.value.limitDateTime.split("/")[0], format)!!
+        val strToLocalTime = LocalTime.parse(_currTodo.value.limitDateTime.split("/")[1], format2)!!
         _selectedLimitDate.value = strToLocalDate
         _selectedLimitTime.value = strToLocalTime
-        _tag.value=_currTodo.value.tag
+        _tag.value = _currTodo.value.tag
     }
 }
 
