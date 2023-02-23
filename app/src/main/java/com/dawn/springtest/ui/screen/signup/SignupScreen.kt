@@ -50,6 +50,7 @@ fun SignupScreen(
     val formState by viewModel.formState
     val userEmail = formState.userEmail
     val password = formState.password
+    val isFormValid by viewModel.isFormValid
 
     val isBusy by viewModel.isBusy.collectAsState()
 
@@ -70,7 +71,7 @@ fun SignupScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            DisplaySection(headerText = "Signup") {
+            DisplaySection(headerText = "회원가입") {
                 InputField(
                     modifier = Modifier,
                     value = userEmail,
@@ -95,6 +96,7 @@ fun SignupScreen(
                     modifier = Modifier
                         .fillMaxWidth(),
                     onClick = { viewModel.onEvent(SignupUiEvent.SubmitButtonPressed) },
+                    enabled = isFormValid
                 ) {
                     Text("등록")
                 }

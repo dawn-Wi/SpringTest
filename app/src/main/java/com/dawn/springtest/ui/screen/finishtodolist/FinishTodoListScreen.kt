@@ -91,9 +91,9 @@ fun FinishTodoListScreen(
                         Text(
                             modifier = Modifier
                                 .padding(5.dp)
-                                .weight(1f),
+                                .weight(2f),
                             text = todo.content,
-                            fontSize = 25.sp,
+                            fontSize = 35.sp,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
@@ -110,7 +110,7 @@ fun FinishTodoListScreen(
                                     .padding(5.dp)
                                     .weight(1f),
                                 text = "#" + todo.tag,
-                                fontSize = 13.sp,
+                                fontSize = 12.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 color = Color.DarkGray
                             )

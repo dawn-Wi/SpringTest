@@ -21,6 +21,7 @@ import com.dawn.springtest.ui.screen.finishtodolist.finishTodoListScreen
 import com.dawn.springtest.ui.screen.login.loginScreen
 import com.dawn.springtest.ui.screen.login.loginScreenRoute
 import com.dawn.springtest.ui.screen.signup.signupScreen
+import com.dawn.springtest.ui.screen.signup.signupScreenRoute
 import com.dawn.springtest.ui.screen.tododetails.todoDetailsScreen
 import com.dawn.springtest.ui.screen.todoform.todoFormScreen
 import com.dawn.springtest.ui.screen.todolist.todoListScreen
@@ -38,16 +39,18 @@ fun App(
         snackbarHost = { SnackbarHost(hostState = viewModel.snackbarService.snackbarState) },
         bottomBar = {
             if (currNavScreenRoute != loginScreenRoute) {
-                BottomNavBar(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    items = bottomNavBarItem,
-                    currNavScreenRoute = currNavScreenRoute,
-                    onBottomNavBarButtonPressed = {
-                        viewModel.onEvent(AppUiEvent.BottomNavBarButtonPressed(it))
-                    }
-                )
+                if (currNavScreenRoute != signupScreenRoute){
+                    BottomNavBar(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        items = bottomNavBarItem,
+                        currNavScreenRoute = currNavScreenRoute,
+                        onBottomNavBarButtonPressed = {
+                            viewModel.onEvent(AppUiEvent.BottomNavBarButtonPressed(it))
+                        }
+                    )
+                }
             }
         }
     ) {
