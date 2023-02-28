@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.0.2'
 	id 'io.spring.dependency-management' version '1.1.0'
+	id 'com.google.cloud.tools.jib' version '3.3.1'
 }
 
 group = 'dawn'
@@ -11,6 +12,16 @@ sourceCompatibility = '17'
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
+	}
+}
+jib.to.image = 'widawn/todolist'
+jib{
+	to{
+		image = 'widawn/todolist'
+		auth{
+			username=property("docker.username").toString()
+			password=property("docker.password").toString()
+		}
 	}
 }
 
@@ -25,6 +36,7 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	runtimeOnly 'com.h2database:h2'
+	implementation 'mysql:mysql-connector-java'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
